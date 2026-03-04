@@ -123,22 +123,10 @@ export default function ProductTablePage() {
       }}
       secondaryActions={[
         {
-          content: 'Card View',
-          onAction: () => router.push('/products'),
-        },
-        {
-          content: 'Modal Demo',
-          onAction: () => router.push('/products/modal'),
-        },
-        {
           content: 'Add Product',
           onAction: () => console.log('Add product'),
         },
       ]}
-      backAction={{
-        content: 'Products',
-        onAction: () => router.push('/products'),
-      }}
     >
       <Layout>
         {error && (
@@ -191,7 +179,7 @@ export default function ProductTablePage() {
             onSelectionChange={handleSelectionChange}
             selectedIds={selectedIds}
             selectable={true}
-            showActions={true}
+            showActions={false}
             onAction={handleAction}
             emptyStateMessage="No products available. Try refreshing or adding new products."
           />

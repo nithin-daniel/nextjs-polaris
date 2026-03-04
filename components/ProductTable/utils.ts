@@ -51,9 +51,11 @@ export const transformProductsToRows = (products: Product[]): ProductTableRow[] 
     image: product.image,
     title: truncateText(product.title, 50),
     category: capitalizeCategory(product.category),
+    status: product.status,
+    vendor: product.vendor,
+    productType: product.productType,
+    availability: product.availability,
     price: formatPrice(product.price),
-    rating: formatRating(product.rating.rate, product.rating.count),
-    stock: 'In Stock', // Placeholder as API doesn't provide stock info
   }));
 };
 

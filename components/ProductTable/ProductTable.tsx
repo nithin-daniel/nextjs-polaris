@@ -130,44 +130,52 @@ export const ProductTable: React.FC<ProductTableProps> = ({
         <Badge tone="info">{row.category}</Badge>
       </IndexTable.Cell>
 
+      {/* Status column */}
+      <IndexTable.Cell>
+        <Badge 
+          tone={
+            row.status === 'active' ? 'success' : 
+            row.status === 'draft' ? 'attention' : 
+            'info'
+          }
+        >
+          {row.status}
+        </Badge>
+      </IndexTable.Cell>
+
+      {/* Vendor column */}
+      <IndexTable.Cell>
+        <Text variant="bodyMd" as="span">
+          {row.vendor}
+        </Text>
+      </IndexTable.Cell>
+
+      {/* Product Type column */}
+      <IndexTable.Cell>
+        <Text variant="bodyMd" as="span">
+          {row.productType}
+        </Text>
+      </IndexTable.Cell>
+
+      {/* Availability column */}
+      <IndexTable.Cell>
+        <Badge 
+          tone={
+            row.availability === 'in_stock' ? 'success' : 
+            row.availability === 'low_stock' ? 'attention' : 
+            'critical'
+          }
+        >
+          {row.availability.replace('_', ' ')}
+        </Badge>
+      </IndexTable.Cell>
+
       {/* Price column */}
       <IndexTable.Cell>
         <Text variant="bodyMd" fontWeight="medium" as="span">
           {row.price}
         </Text>
       </IndexTable.Cell>
-
-      {/* Rating column */}
-      <IndexTable.Cell>
-        <Text variant="bodyMd" as="span">
-          {row.rating}
-        </Text>
-      </IndexTable.Cell>
-
-      {/* Stock column */}
-      <IndexTable.Cell>
-        <Badge tone="success">{row.stock}</Badge>
-      </IndexTable.Cell>
-
-      {/* Actions column */}
-      {showActions && (
-        <IndexTable.Cell>
-          <ButtonGroup>
-            <Button
-              size="slim"
-              onClick={() => handleAction('view', row.id)}
-            >
-              View
-            </Button>
-            <Button
-              size="slim"
-              onClick={() => handleAction('edit', row.id)}
-            >
-              Edit
-            </Button>
-          </ButtonGroup>
-        </IndexTable.Cell>
-      )}
     </IndexTable.Row>
   ));
 
@@ -197,10 +205,11 @@ export const ProductTable: React.FC<ProductTableProps> = ({
         headings={[
           { title: 'Product' },
           { title: 'Category' },
+          { title: 'Status' },
+          { title: 'Vendor' },
+          { title: 'Type' },
+          { title: 'Availability' },
           { title: 'Price' },
-          { title: 'Rating' },
-          { title: 'Stock' },
-          ...(showActions ? [{ title: 'Actions' }] : []),
         ]}
         loading={loading}
         selectable={selectable}

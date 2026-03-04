@@ -33,9 +33,11 @@ export interface ProductTableRow {
   image: string;
   title: string;
   category: string;
+  status: string;
+  vendor: string;
+  productType: string;
+  availability: string;
   price: string;
-  rating: string;
-  stock: string;
   [key: string]: unknown;
 }
 
