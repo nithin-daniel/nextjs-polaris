@@ -25,7 +25,7 @@ import { filterProducts } from '@/utils/productFilters';
 
 export default function ProductTablePage() {
   const router = useRouter();
-  const { products, loading, error, refreshProducts } = useProducts();
+  const { products, loading, error } = useProducts();
   
   // Selection state
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
@@ -172,10 +172,6 @@ export default function ProductTablePage() {
     <Page
       title="Products Table"
       subtitle={`${filteredProducts.length} products in table format`}
-      primaryAction={{
-        content: 'Refresh',
-        onAction: refreshProducts,
-      }}
       secondaryActions={[
         {
           content: 'Add Product',
