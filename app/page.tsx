@@ -9,9 +9,11 @@ import {
   ButtonGroup,
   Text,
   TextField,
-  Select,
   InlineStack,
-  Box
+  Box,
+  Popover,
+  ActionList,
+  Checkbox
 } from '@shopify/polaris';
 import { useRouter } from 'next/navigation';
 import { Product, ProductStatus } from '@/types/product';
@@ -31,8 +33,10 @@ export default function HomePage() {
   
   // Search and filter states
   const [searchQuery, setSearchQuery] = useState('');
-  const [purchaseAvailability, setPurchaseAvailability] = useState('');
-  const [productTypeFilter, setProductTypeFilter] = useState('');
+  const [purchaseAvailability, setPurchaseAvailability] = useState<string[]>([]);
+  const [productTypeFilter, setProductTypeFilter] = useState<string[]>([]);
+  const [purchasePopoverActive, setPurchasePopoverActive] = useState(false);
+  const [productTypePopoverActive, setProductTypePopoverActive] = useState(false);
   
   // Modal state
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
@@ -62,21 +66,21 @@ export default function HomePage() {
     }
     
     // Purchase availability filter (mapped to availability)
-    if (purchaseAvailability && purchaseAvailability !== 'placeholder') {
+    if (purchaseAvailability.length > 0) {
       const availabilityMapping: Record<string, string> = {
         'online_store': 'in_stock',
         'point_of_sale': 'low_stock', 
         'buy_button': 'out_of_stock'
       };
-      const mappedAvailability = availabilityMapping[purchaseAvailability];
-      if (mappedAvailability) {
-        result = result.filter(product => product.availability === mappedAvailability);
+      const mappedAvailabilities = purchaseAvailability.map(pa => availabilityMapping[pa]).filter(Boolean);
+      if (mappedAvailabilities.length > 0) {
+        result = result.filter(product => mappedAvailabilities.includes(product.availability));
       }
     }
     
     // Product type filter
-    if (productTypeFilter && productTypeFilter !== 'type_placeholder') {
-      result = result.filter(product => product.productType === productTypeFilter);
+    if (productTypeFilter.length > 0) {
+      result = result.filter(product => productTypeFilter.includes(product.productType));
     }
     
     return result;
@@ -133,14 +137,12 @@ export default function HomePage() {
   // Clear all filters
   const clearAllFilters = useCallback(() => {
     setSearchQuery('');
-    setPurchaseAvailability('');
-    setProductTypeFilter('');
+    setPurchaseAvailability([]);
+    setProductTypeFilter([]);
   }, []);
 
   // Check if any filters are active
-  const hasActiveFilters = searchQuery.trim() || 
-    (purchaseAvailability && purchaseAvailability !== 'placeholder') || 
-    (productTypeFilter && productTypeFilter !== 'type_placeholder');
+  const hasActiveFilters = searchQuery.trim() || purchaseAvailability.length > 0 || productTypeFilter.length > 0;
 
   // Bulk action buttons
   const bulkActions = selectedIds.length > 0 && (
@@ -211,31 +213,105 @@ export default function HomePage() {
               
               {/* Filters - right section */}
               <InlineStack gap="200" align="end">
-                <Select
-                  label=""
-                  options={[
-                    { label: 'Purchase Availability', value: 'placeholder', disabled: true },
-                    { label: 'Online Store', value: 'online_store' },
-                    { label: 'Point of Sale', value: 'point_of_sale' },
-                    { label: 'Buy Button', value: 'buy_button' },
-                  ]}
-                  value={purchaseAvailability}
-                  onChange={setPurchaseAvailability}
-                  placeholder="Purchase Availability"
-                />
+                {/* Purchase Availability Filter */}
+                <Popover
+                  active={purchasePopoverActive}
+                  activator={
+                    <Button
+                      onClick={() => setPurchasePopoverActive(!purchasePopoverActive)}
+                      disclosure
+                    >
+                      {`Purchase Availability${purchaseAvailability.length > 0 ? ` (${purchaseAvailability.length})` : ''}`}
+                    </Button>
+                  }
+                  onClose={() => setPurchasePopoverActive(false)}
+                >
+                  <div style={{ padding: '16px', minWidth: '200px' }}>
+                    <Text variant="headingMd" as="h3">Purchase Availability</Text>
+                    <div style={{ marginTop: '12px' }}>
+                      {[
+                        { label: 'Online Store', value: 'online_store' },
+                        { label: 'Point of Sale', value: 'point_of_sale' },
+                        { label: 'Buy Button', value: 'buy_button' },
+                      ].map((option) => (
+                        <div key={option.value} style={{ marginBottom: '8px' }}>
+                          <Checkbox
+                            label={option.label}
+                            checked={purchaseAvailability.includes(option.value)}
+                            onChange={(checked) => {
+                              if (checked) {
+                                setPurchaseAvailability([...purchaseAvailability, option.value]);
+                              } else {
+                                setPurchaseAvailability(purchaseAvailability.filter(pa => pa !== option.value));
+                              }
+                            }}
+                          />
+                        </div>
+                      ))}
+                      {purchaseAvailability.length > 0 && (
+                        <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e1e3e5' }}>
+                          <Button
+                            onClick={() => setPurchaseAvailability([])}
+                            variant="plain"
+                            size="slim"
+                          >
+                            Clear
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Popover>
                 
-                <Select
-                  label=""
-                  options={[
-                    { label: 'Product Type', value: 'type_placeholder', disabled: true },
-                    { label: 'T-Shirt', value: 'T-Shirt' },
-                    { label: 'Accessory', value: 'Accessory' },
-                    { label: 'Gift Card', value: 'Gift Card' },
-                  ]}
-                  value={productTypeFilter}
-                  onChange={setProductTypeFilter}
-                  placeholder="Product Type"
-                />
+                {/* Product Type Filter */}
+                <Popover
+                  active={productTypePopoverActive}
+                  activator={
+                    <Button
+                      onClick={() => setProductTypePopoverActive(!productTypePopoverActive)}
+                      disclosure
+                    >
+                      {`Product Type${productTypeFilter.length > 0 ? ` (${productTypeFilter.length})` : ''}`}
+                    </Button>
+                  }
+                  onClose={() => setProductTypePopoverActive(false)}
+                >
+                  <div style={{ padding: '16px', minWidth: '200px' }}>
+                    <Text variant="headingMd" as="h3">Product Type</Text>
+                    <div style={{ marginTop: '12px' }}>
+                      {[
+                        { label: 'T-Shirt', value: 'T-Shirt' },
+                        { label: 'Accessory', value: 'Accessory' },
+                        { label: 'Gift Card', value: 'Gift Card' },
+                      ].map((option) => (
+                        <div key={option.value} style={{ marginBottom: '8px' }}>
+                          <Checkbox
+                            label={option.label}
+                            checked={productTypeFilter.includes(option.value)}
+                            onChange={(checked) => {
+                              if (checked) {
+                                setProductTypeFilter([...productTypeFilter, option.value]);
+                              } else {
+                                setProductTypeFilter(productTypeFilter.filter(pt => pt !== option.value));
+                              }
+                            }}
+                          />
+                        </div>
+                      ))}
+                      {productTypeFilter.length > 0 && (
+                        <div style={{ marginTop: '12px', paddingTop: '12px', borderTop: '1px solid #e1e3e5' }}>
+                          <Button
+                            onClick={() => setProductTypeFilter([])}
+                            variant="plain"
+                            size="slim"
+                          >
+                            Clear
+                          </Button>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Popover>
                 
                 {hasActiveFilters && (
                   <Button
