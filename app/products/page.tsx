@@ -13,9 +13,11 @@ import {
   Spinner,
   Banner
 } from '@shopify/polaris';
+import { useRouter } from 'next/navigation';
 import { Product, productService } from '@/services';
 
 export default function ProductsPage() {
+  const router = useRouter();
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -83,6 +85,12 @@ export default function ProductsPage() {
         content: 'Refresh',
         onAction: fetchProducts,
       }}
+      secondaryActions={[
+        {
+          content: 'Table View',
+          onAction: () => router.push('/products/table'),
+        },
+      ]}
     >
       <Layout>
         {error && (
