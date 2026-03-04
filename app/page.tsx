@@ -1,9 +1,9 @@
 'use client';
 
 import { useState, useCallback, useMemo } from 'react';
-import { 
-  Page, 
-  Layout, 
+import {
+  Page,
+  Layout,
   Banner,
   Button,
   ButtonGroup,
@@ -14,7 +14,8 @@ import {
   Popover,
   ActionList,
   Checkbox,
-  Tag
+  Tag,
+  Sheet,
 } from '@shopify/polaris';
 import { useRouter } from 'next/navigation';
 import { Product, ProductStatus } from '@/types/product';
@@ -36,6 +37,11 @@ export default function HomePage() {
   const [searchQuery, setSearchQuery] = useState('');
   const [purchaseAvailability, setPurchaseAvailability] = useState<string[]>([]);
   const [productTypeFilter, setProductTypeFilter] = useState<string[]>([]);
+  const [vendorFilter, setVendorFilter] = useState<string[]>([]);
+  const [moreFiltersOpen, setMoreFiltersOpen] = useState(false);
+  const [purchaseDropdownOpen, setPurchaseDropdownOpen] = useState(false);
+  const [productTypeDropdownOpen, setProductTypeDropdownOpen] = useState(false);
+  const [vendorDropdownOpen, setVendorDropdownOpen] = useState(false);
   const [purchasePopoverActive, setPurchasePopoverActive] = useState(false);
   const [productTypePopoverActive, setProductTypePopoverActive] = useState(false);
   
@@ -84,8 +90,13 @@ export default function HomePage() {
       result = result.filter(product => productTypeFilter.includes(product.productType));
     }
     
+    // Vendor filter
+    if (vendorFilter.length > 0) {
+      result = result.filter(product => vendorFilter.includes(product.vendor));
+    }
+    
     return result;
-  }, [products, selectedTab, searchQuery, purchaseAvailability, productTypeFilter]);
+  }, [products, selectedTab, searchQuery, purchaseAvailability, productTypeFilter, vendorFilter]);
   
   // Navigation tabs with counts
   const tabs = useMemo(() => [
@@ -303,13 +314,21 @@ export default function HomePage() {
                     </div>
                   </div>
                 </Popover>
+                
+                {/* More Filters Button */}
+                <Button
+                  onClick={() => setMoreFiltersOpen(true)}
+                  variant="secondary"
+                >
+                  More Filters
+                </Button>
               </InlineStack>
             </InlineStack>
           </Box>
         </Layout.Section>
 
         {/* Selected Filters */}
-        {(purchaseAvailability.length > 0 || productTypeFilter.length > 0) && (
+        {(purchaseAvailability.length > 0 || productTypeFilter.length > 0 || vendorFilter.length > 0) && (
           <Layout.Section>
             <InlineStack gap="200" wrap>
               {purchaseAvailability.map((item) => (
@@ -330,6 +349,16 @@ export default function HomePage() {
                   }}
                 >
                   Type: {item}
+                </Tag>
+              ))}
+              {vendorFilter.map((item) => (
+                <Tag
+                  key={`vendor-${item}`}
+                  onRemove={() => {
+                    setVendorFilter(prev => prev.filter(p => p !== item));
+                  }}
+                >
+                  Vendor: {item}
                 </Tag>
               ))}
             </InlineStack>
@@ -390,6 +419,167 @@ export default function HomePage() {
           size="large"
         />
       </Layout>
+
+      {/* More Filters Sidebar */}
+      <Sheet
+        open={moreFiltersOpen}
+        onClose={() => setMoreFiltersOpen(false)}
+        accessibilityLabel="More filters"
+      >
+        <div style={{ 
+          padding: '24px', 
+          height: '100vh', 
+          display: 'flex', 
+          flexDirection: 'column',
+          backgroundColor: 'rgba(255, 255, 255, 0.95)'
+        }}>
+          <div style={{ flex: 1 }}>
+            <Text variant="headingLg" as="h2">More Filters</Text>
+            
+            <div style={{ marginTop: '24px' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '32px' }}>
+                {/* Purchase Availability Collapsible */}
+                <div>
+                  <Button
+                    onClick={() => setPurchaseDropdownOpen(!purchaseDropdownOpen)}
+                    variant="plain"
+                    textAlign="left"
+                    size="large"
+                    disclosure={purchaseDropdownOpen ? 'up' : 'down'}
+                  >
+                    Purchase Availability
+                  </Button>
+                  {purchaseDropdownOpen && (
+                    <div style={{ marginTop: '12px', paddingLeft: '16px' }}>
+                      {[
+                        { label: 'Online Store', value: 'online_store' },
+                        { label: 'Point of Sale', value: 'point_of_sale' },
+                        { label: 'Buy Button', value: 'buy_button' },
+                      ].map((option) => (
+                        <div key={option.value} style={{ marginBottom: '8px' }}>
+                          <Checkbox
+                            label={option.label}
+                            checked={purchaseAvailability.includes(option.value)}
+                            onChange={(checked) => {
+                              if (checked) {
+                                setPurchaseAvailability([...purchaseAvailability, option.value]);
+                              } else {
+                                setPurchaseAvailability(purchaseAvailability.filter(pa => pa !== option.value));
+                              }
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Product Type Collapsible */}
+                <div>
+                  <Button
+                    onClick={() => setProductTypeDropdownOpen(!productTypeDropdownOpen)}
+                    variant="plain"
+                    textAlign="left"
+                    size="large"
+                    disclosure={productTypeDropdownOpen ? 'up' : 'down'}
+                  >
+                    Product Type
+                  </Button>
+                  {productTypeDropdownOpen && (
+                    <div style={{ marginTop: '12px', paddingLeft: '16px' }}>
+                      {[
+                        { label: 'T-Shirt', value: 'T-Shirt' },
+                        { label: 'Accessory', value: 'Accessory' },
+                        { label: 'Gift Card', value: 'Gift Card' },
+                      ].map((option) => (
+                        <div key={option.value} style={{ marginBottom: '8px' }}>
+                          <Checkbox
+                            label={option.label}
+                            checked={productTypeFilter.includes(option.value)}
+                            onChange={(checked) => {
+                              if (checked) {
+                                setProductTypeFilter([...productTypeFilter, option.value]);
+                              } else {
+                                setProductTypeFilter(productTypeFilter.filter(pt => pt !== option.value));
+                              }
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+
+                {/* Vendor Collapsible */}
+                <div>
+                  <Button
+                    onClick={() => setVendorDropdownOpen(!vendorDropdownOpen)}
+                    variant="plain"
+                    textAlign="left"
+                    size="large"
+                    disclosure={vendorDropdownOpen ? 'up' : 'down'}
+                  >
+                    Vendor
+                  </Button>
+                  {vendorDropdownOpen && (
+                    <div style={{ marginTop: '12px', paddingLeft: '16px' }}>
+                      {[
+                        { label: 'Apple', value: 'Apple' },
+                        { label: 'Nike', value: 'Nike' },
+                        { label: 'Zara', value: 'Zara' },
+                        { label: 'Tiffany & Co', value: 'Tiffany & Co' },
+                        { label: 'Samsung', value: 'Samsung' },
+                        { label: 'Adidas', value: 'Adidas' },
+                      ].map((option) => (
+                        <div key={option.value} style={{ marginBottom: '8px' }}>
+                          <Checkbox
+                            label={option.label}
+                            checked={vendorFilter.includes(option.value)}
+                            onChange={(checked) => {
+                              if (checked) {
+                                setVendorFilter([...vendorFilter, option.value]);
+                              } else {
+                                setVendorFilter(vendorFilter.filter(v => v !== option.value));
+                              }
+                            }}
+                          />
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          {/* Footer */}
+          <div style={{ 
+            borderTop: '1px solid #e1e3e5', 
+            paddingTop: '16px', 
+            display: 'flex', 
+            justifyContent: 'space-between', 
+            alignItems: 'center'
+          }}>
+            <Button
+              variant="plain"
+              onClick={() => {
+                setPurchaseAvailability([]);
+                setProductTypeFilter([]);
+                setVendorFilter([]);
+              }}
+            >
+              Clear all filters
+            </Button>
+            <Button
+              variant="primary"
+              tone="success"
+              onClick={() => setMoreFiltersOpen(false)}
+            >
+              Done
+            </Button>
+          </div>
+        </div>
+      </Sheet>
     </Page>
   );
 }
