@@ -90,6 +90,10 @@ export default function ProductsPage() {
           content: 'Table View',
           onAction: () => router.push('/products/table'),
         },
+        {
+          content: 'Modal Demo',
+          onAction: () => router.push('/products/modal'),
+        },
       ]}
     >
       <Layout>

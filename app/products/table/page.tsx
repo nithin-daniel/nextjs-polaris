@@ -7,14 +7,12 @@ import {
   Banner,
   Button,
   ButtonGroup,
-  Modal,
-  Text,
-  TextContainer
+  Text
 } from '@shopify/polaris';
 import { useRouter } from 'next/navigation';
 import { Product } from '@/types/product';
 import { useProducts } from '@/hooks';
-import { ProductTable } from '@/components';
+import { ProductTable, ProductModal } from '@/components';
 
 export default function ProductTablePage() {
   const router = useRouter();
@@ -103,6 +101,10 @@ export default function ProductTablePage() {
           onAction: () => router.push('/products'),
         },
         {
+          content: 'Modal Demo',
+          onAction: () => router.push('/products/modal'),
+        },
+        {
           content: 'Add Product',
           onAction: () => console.log('Add product'),
         },
@@ -142,71 +144,34 @@ export default function ProductTablePage() {
         </Layout.Section>
 
         {/* Product Detail Modal */}
-        {selectedProduct && (
-          <Modal
-            open={isModalOpen}
-            onClose={closeModal}
-            title={selectedProduct.title}
-            primaryAction={{
+        <ProductModal
+          product={selectedProduct}
+          open={isModalOpen}
+          onClose={closeModal}
+          primaryAction={{
+            content: 'Add to Cart',
+            onAction: () => {
+              console.log('Add to cart:', selectedProduct?.title);
+              closeModal();
+            },
+          }}
+          secondaryActions={[
+            {
+              content: 'Edit Product',
+              onAction: () => {
+                console.log('Edit product:', selectedProduct?.id);
+                closeModal();
+              },
+            },
+            {
               content: 'Close',
               onAction: closeModal,
-            }}
-            secondaryActions={[
-              {
-                content: 'Edit Product',
-                onAction: () => {
-                  console.log('Edit product:', selectedProduct.id);
-                  closeModal();
-                },
-              },
-            ]}
-          >
-            <Modal.Section>
-              <Layout>
-                <Layout.Section variant="oneThird">
-                  <img
-                    src={selectedProduct.image}
-                    alt={selectedProduct.title}
-                    style={{
-                      width: '100%',
-                      maxWidth: '200px',
-                      borderRadius: '8px',
-                    }}
-                  />
-                </Layout.Section>
-                
-                <Layout.Section>
-                  <TextContainer>
-                    <Text variant="headingMd" as="h3">
-                      Product Details
-                    </Text>
-                    
-                    <div style={{ marginTop: '16px' }}>
-                      <Text variant="bodyMd" fontWeight="medium" as="p">
-                        Price: ${selectedProduct.price}
-                      </Text>
-                      <Text variant="bodyMd" as="p">
-                        Category: {selectedProduct.category}
-                      </Text>
-                      <Text variant="bodyMd" as="p">
-                        Rating: ⭐ {selectedProduct.rating.rate} ({selectedProduct.rating.count} reviews)
-                      </Text>
-                    </div>
-
-                    <div style={{ marginTop: '16px' }}>
-                      <Text variant="bodyMd" fontWeight="medium" as="p">
-                        Description:
-                      </Text>
-                      <Text variant="bodyMd" as="p">
-                        {selectedProduct.description}
-                      </Text>
-                    </div>
-                  </TextContainer>
-                </Layout.Section>
-              </Layout>
-            </Modal.Section>
-          </Modal>
-        )}
+            },
+          ]}
+          showCategory={true}
+          showRating={true}
+          size="large"
+        />
       </Layout>
     </Page>
   );
