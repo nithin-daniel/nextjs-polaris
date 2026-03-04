@@ -1,15 +1,18 @@
 'use client';
 
 import { Page, Card, Button, Layout, TextContainer, Text, BlockStack } from '@shopify/polaris';
+import { useRouter } from 'next/navigation';
 
 export default function HomePage() {
+  const router = useRouter();
+
   return (
     <Page
       title="Shopify Dashboard"
       subtitle="Welcome to your Polaris-powered Next.js dashboard"
       primaryAction={{
-        content: 'Create order',
-        onAction: () => console.log('Primary action'),
+        content: 'View Products',
+        onAction: () => router.push('/products'),
       }}
       secondaryActions={[
         {
@@ -35,10 +38,12 @@ export default function HomePage() {
                   <li>✅ Global CSS imports for Polaris styles</li>
                   <li>✅ TypeScript compatibility</li>
                   <li>✅ SSR-safe client-side provider</li>
+                  <li>✅ Strongly typed Product interface</li>
+                  <li>✅ Production-ready Product service</li>
                 </ul>
               </TextContainer>
-              <Button variant="primary">
-                Get started building
+              <Button variant="primary" onClick={() => router.push('/products')}>
+                View Products Example
               </Button>
             </BlockStack>
           </Card>
@@ -51,8 +56,10 @@ export default function HomePage() {
                 Quick Actions
               </Text>
               <BlockStack gap="200">
-                <Button>View orders</Button>
-                <Button>Manage products</Button>
+                <Button onClick={() => router.push('/products')}>
+                  View products
+                </Button>
+                <Button>Manage inventory</Button>
                 <Button>Customer analytics</Button>
               </BlockStack>
             </BlockStack>
