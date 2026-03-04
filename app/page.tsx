@@ -13,7 +13,8 @@ import {
   Box,
   Popover,
   ActionList,
-  Checkbox
+  Checkbox,
+  Tag
 } from '@shopify/polaris';
 import { useRouter } from 'next/navigation';
 import { Product, ProductStatus } from '@/types/product';
@@ -221,7 +222,7 @@ export default function HomePage() {
                       onClick={() => setPurchasePopoverActive(!purchasePopoverActive)}
                       disclosure
                     >
-                      {`Purchase Availability${purchaseAvailability.length > 0 ? ` (${purchaseAvailability.length})` : ''}`}
+                      {purchaseAvailability.length > 0 ? `Purchase Availability (${purchaseAvailability.length})` : 'Select Purchase Availability'}
                     </Button>
                   }
                   onClose={() => setPurchasePopoverActive(false)}
@@ -271,7 +272,7 @@ export default function HomePage() {
                       onClick={() => setProductTypePopoverActive(!productTypePopoverActive)}
                       disclosure
                     >
-                      {`Product Type${productTypeFilter.length > 0 ? ` (${productTypeFilter.length})` : ''}`}
+                      {productTypeFilter.length > 0 ? `Product Type (${productTypeFilter.length})` : 'Select Product Type'}
                     </Button>
                   }
                   onClose={() => setProductTypePopoverActive(false)}
@@ -326,6 +327,34 @@ export default function HomePage() {
             </InlineStack>
           </Box>
         </Layout.Section>
+
+        {/* Selected Filters */}
+        {(purchaseAvailability.length > 0 || productTypeFilter.length > 0) && (
+          <Layout.Section>
+            <InlineStack gap="200" wrap>
+              {purchaseAvailability.map((item) => (
+                <Tag
+                  key={`purchase-${item}`}
+                  onRemove={() => {
+                    setPurchaseAvailability(prev => prev.filter(p => p !== item));
+                  }}
+                >
+                  Purchase: {item === 'online_store' ? 'Online Store' : item === 'point_of_sale' ? 'Point of Sale' : 'Buy Button'}
+                </Tag>
+              ))}
+              {productTypeFilter.map((item) => (
+                <Tag
+                  key={`type-${item}`}
+                  onRemove={() => {
+                    setProductTypeFilter(prev => prev.filter(p => p !== item));
+                  }}
+                >
+                  Type: {item}
+                </Tag>
+              ))}
+            </InlineStack>
+          </Layout.Section>
+        )}
 
         {/* Status Navigation */}
         <Layout.Section>
