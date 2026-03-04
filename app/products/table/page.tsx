@@ -313,16 +313,6 @@ export default function ProductTablePage() {
                     </div>
                   </div>
                 </Popover>
-                
-                {hasActiveFilters && (
-                  <Button
-                    onClick={clearAllFilters}
-                    variant="plain"
-                    removeUnderline
-                  >
-                    Clear
-                  </Button>
-                )}
               </InlineStack>
             </InlineStack>
           </Box>
