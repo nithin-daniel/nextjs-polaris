@@ -1,9 +1,11 @@
 import { 
   Product, 
+  ApiProduct,
   ProductsApiResponse, 
   ServiceResponse, 
   ProductServiceConfig 
 } from '@/types/product';
+import { enrichProductsWithMockData, enrichProductWithMockData } from '@/utils/mockProductEnrichment';
 
 /**
  * Production-ready Product Service
@@ -42,9 +44,12 @@ export class ProductService {
 
       // Type validation for each product
       const validatedProducts = data.map(this.validateProduct);
+      
+      // Enrich with mock UI-only fields
+      const enrichedProducts = enrichProductsWithMockData(validatedProducts);
 
       return {
-        data: validatedProducts,
+        data: enrichedProducts,
         success: true,
       };
     } catch (error) {
@@ -69,11 +74,14 @@ export class ProductService {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
 
-      const data: Product = await response.json();
+      const data: ApiProduct = await response.json();
       const validatedProduct = this.validateProduct(data);
+      
+      // Enrich with mock UI-only fields
+      const enrichedProduct = enrichProductWithMockData(validatedProduct);
 
       return {
-        data: validatedProduct,
+        data: enrichedProduct,
         success: true,
       };
     } catch (error) {
@@ -100,9 +108,12 @@ export class ProductService {
 
       const data: ProductsApiResponse = await response.json();
       const validatedProducts = data.map(this.validateProduct);
+      
+      // Enrich with mock UI-only fields
+      const enrichedProducts = enrichProductsWithMockData(validatedProducts);
 
       return {
-        data: validatedProducts,
+        data: enrichedProducts,
         success: true,
       };
     } catch (error) {
@@ -181,7 +192,7 @@ export class ProductService {
    * Validates product data structure
    * @private
    */
-  private validateProduct(product: any): Product {
+  private validateProduct(product: any): ApiProduct {
     if (!product || typeof product !== 'object') {
       throw new Error('Invalid product data');
     }

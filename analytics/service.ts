@@ -36,6 +36,7 @@ export class AnalyticsService implements IAnalyticsService {
       flushInterval: 5000, // 5 seconds
       maxRetries: 3,
       enableLocalStorage: true,
+      enableDebugMode: false,
       ...config
     };
     
@@ -124,6 +125,13 @@ export class AnalyticsService implements IAnalyticsService {
         error
       );
     }
+  }
+
+  /**
+   * Check if debug mode is enabled
+   */
+  get isDebugMode(): boolean {
+    return this.config.enableDebugMode;
   }
 
   /**

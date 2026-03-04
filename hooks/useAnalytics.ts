@@ -107,10 +107,8 @@ export const useAnalytics = () => {
   const trackCustomEvent = useCallback((eventType: string, properties: Record<string, any>) => {
     // For custom events not covered by the predefined types
     // Track custom event with analytics service
-    if (analyticsService.config.enableDebugMode) {
-      // Only log in debug mode
-      console.debug('[Analytics] Custom event:', eventType, properties);
-    }
+    // TODO: Replace with unified analytics system
+    console.debug('[Analytics] Custom event:', eventType, properties);
     // You could extend the analytics service to handle custom events
   }, []);
 

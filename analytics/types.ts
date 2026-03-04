@@ -83,6 +83,7 @@ export interface AnalyticsConfig {
   flushInterval: number;
   maxRetries: number;
   enableLocalStorage: boolean;
+  enableDebugMode: boolean;
 }
 
 // Service contracts
@@ -104,6 +105,7 @@ export interface IAnalyticsService {
   query(query?: EventQuery): Promise<AnalyticsEvent[]>;
   flush(): Promise<void>;
   clear(): Promise<void>;
+  readonly isDebugMode: boolean;
 }
 
 // Error types

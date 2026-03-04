@@ -112,7 +112,7 @@ export class HttpEventStorage implements IEventStorage {
   }
 
   private async withRetry<T>(operation: () => Promise<T>): Promise<T> {
-    let lastError: Error;
+    let lastError: Error = new Error('No attempts made');
     
     for (let attempt = 1; attempt <= this.maxRetries; attempt++) {
       try {
@@ -131,7 +131,7 @@ export class HttpEventStorage implements IEventStorage {
     }
     
     throw new StorageError(
-      `Failed after ${this.maxRetries} attempts: ${lastError!.message}`,
+      `Failed after ${this.maxRetries} attempts: ${lastError.message}`,
       lastError
     );
   }

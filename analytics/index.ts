@@ -21,6 +21,9 @@ export * from './session/manager';
 // React integration
 export * from './react/context';
 
+// Import factory for instance creation
+import { AnalyticsFactory } from './factory';
+
 // Re-export factory for convenience
 export { AnalyticsFactory as Analytics } from './factory';
 
