@@ -55,7 +55,6 @@ export const transformProductsToRows = (products: Product[]): ProductTableRow[] 
     vendor: product.vendor,
     productType: product.productType,
     availability: product.availability,
-    price: formatPrice(product.price),
   }));
 };
 

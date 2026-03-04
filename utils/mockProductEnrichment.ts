@@ -48,23 +48,25 @@ function generateMockVendor(productId: number, category: string): string {
 
 // Generate mock product type based on category and title
 function generateMockProductType(productId: number, category: string, title: string): string {
-  const categoryKey = category as keyof typeof PRODUCT_TYPES;
-  const types = PRODUCT_TYPES[categoryKey] || ['General'];
+  // Use the filter options that exist in the UI
+  const filterOptions = ['T-Shirt', 'Accessory', 'Gift Card'];
   
   // Try to match type based on title keywords
   const titleLower = title.toLowerCase();
   
   // Smart matching for common keywords
-  if (titleLower.includes('shirt') || titleLower.includes('t-shirt')) return 'Shirt';
-  if (titleLower.includes('jacket') || titleLower.includes('coat')) return 'Jacket';
-  if (titleLower.includes('ring')) return 'Ring';
-  if (titleLower.includes('necklace')) return 'Necklace';
-  if (titleLower.includes('dress')) return 'Dress';
-  if (titleLower.includes('laptop') || titleLower.includes('computer')) return 'Laptop';
-  if (titleLower.includes('phone') || titleLower.includes('mobile')) return 'Smartphone';
+  if (titleLower.includes('shirt') || titleLower.includes('t-shirt')) return 'T-Shirt';
+  if (titleLower.includes('jacket') || titleLower.includes('coat')) return 'T-Shirt';
+  if (titleLower.includes('ring') || titleLower.includes('necklace') || titleLower.includes('jewelery')) return 'Accessory';
+  if (titleLower.includes('backpack') || titleLower.includes('bag')) return 'Accessory';
   
-  // Fallback to seeded random selection
-  return getRandomItem(types, productId * 1.7);
+  // For some products, make them gift cards
+  const rand = seededRandom(productId * 2.1);
+  if (rand < 0.15) return 'Gift Card'; // 15% chance for gift cards
+  
+  // Distribute remaining between T-Shirt and Accessory
+  const nonGiftOptions = ['T-Shirt', 'Accessory'];
+  return getRandomItem(nonGiftOptions, productId * 1.7);
 }
 
 /**

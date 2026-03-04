@@ -169,13 +169,6 @@ export const ProductTable: React.FC<ProductTableProps> = ({
           {row.availability.replace('_', ' ')}
         </Badge>
       </IndexTable.Cell>
-
-      {/* Price column */}
-      <IndexTable.Cell>
-        <Text variant="bodyMd" fontWeight="medium" as="span">
-          {row.price}
-        </Text>
-      </IndexTable.Cell>
     </IndexTable.Row>
   ));
 
@@ -209,7 +202,6 @@ export const ProductTable: React.FC<ProductTableProps> = ({
           { title: 'Vendor' },
           { title: 'Type' },
           { title: 'Availability' },
-          { title: 'Price' },
         ]}
         loading={loading}
         selectable={selectable}

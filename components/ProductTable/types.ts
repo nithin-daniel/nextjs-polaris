@@ -37,7 +37,6 @@ export interface ProductTableRow {
   vendor: string;
   productType: string;
   availability: string;
-  price: string;
   [key: string]: unknown;
 }
 
