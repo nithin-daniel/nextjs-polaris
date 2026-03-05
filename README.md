@@ -2,6 +2,10 @@
 
 A modern, feature-rich Shopify-style dashboard built with Next.js 16, React 19, and Shopify Polaris. This project demonstrates advanced product management capabilities, analytics tracking, and sophisticated filtering systems.
 
+## 🌐 Live Demo
+
+**Production URL**: [https://illustrious-pastelito-ae79e1.netlify.app/](https://illustrious-pastelito-ae79e1.netlify.app/)
+
 ## 🚀 Features
 
 - **Product Management**: Advanced product table with search, filtering, and analytics tracking
